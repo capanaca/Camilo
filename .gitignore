@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Personal financial data — never committed.
+data/*.db
+data/*.json
+data/raw/
+reports/
+config/categories.local.json
