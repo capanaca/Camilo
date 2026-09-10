@@ -38,19 +38,25 @@ def main():
 
     new_count = 0
     unmatched = 0
+    superseded = 0
     for raw_email in emails:
         txn = parse_email(raw_email)
         if txn is None:
             unmatched += 1
             continue
         txn.category = categorize(txn)
+        if txn.source == "bancolombia" and txn.kind == "compra":
+            superseded += store.delete_matching_gateway_purchase(
+                ["bold", "mercadopago"], txn.date, txn.amount
+            )
         if store.upsert(txn):
             new_count += 1
     store.commit()
     store.close()
 
     print(f"Procesados {len(emails)} correos: {new_count} transacciones nuevas, "
-          f"{unmatched} sin reconocer (marketing/otros).")
+          f"{unmatched} sin reconocer (marketing/otros), "
+          f"{superseded} de pasarela reemplazadas por la notificación de Bancolombia.")
 
 
 if __name__ == "__main__":

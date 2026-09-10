@@ -60,6 +60,23 @@ class Storage:
         )
         return [dict(row) for row in cur.fetchall()]
 
+    def delete_matching_gateway_purchase(self, sources: list, date: str, amount: float) -> int:
+        """Removes 'compra' rows from `sources` on `date` matching `amount`.
+
+        Bancolombia notifies every card purchase regardless of which gateway
+        routed it, while Mercado Pago/Bold only notify their own subset — so
+        when a Bancolombia purchase email arrives, any gateway-email row for
+        the same day and amount is almost certainly the same purchase under
+        a different merchant descriptor (e.g. "SABAI" vs "BOLD SA*SABAI").
+        """
+        placeholders = ",".join("?" for _ in sources)
+        cur = self.conn.execute(
+            f"DELETE FROM transactions WHERE source IN ({placeholders}) "
+            f"AND kind = 'compra' AND date = ? AND amount = ?",
+            (*sources, date, amount),
+        )
+        return cur.rowcount
+
     def delete_purchases_in_range(self, sources: list, date_from: str, date_to: str) -> int:
         """Removes 'compra' rows from `sources` within [date_from, date_to].
 

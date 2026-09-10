@@ -94,10 +94,86 @@ def test_bancolombia_compra_rechazada():
     txn = parse_email(_email(
         "alertasynotificaciones@bancolombia.com.co",
         "Alertas y Notificaciones",
-        "tu compra en TIENDA DEMO por COP99.000,00 no fue exitosa, el cupo de tu T.Credito *3333 no se afecto.",
+        "tu compra en TIENDA DEMO por COP99.000,00 no fue exitosa, el cupo de tu T.Credito *3333 "
+        "no se afecto. 07:08.29/05/2026.¿Dudas?",
     ))
     assert txn.kind == "compra_rechazada"
     assert txn.direction == DIRECTION_EXCLUDED
+    assert txn.date == "2026-05-29"
+
+
+def test_bancolombia_second_sender_domain_recognized():
+    txn = parse_email(_email(
+        "alertasynotificaciones@an.notificacionesbancolombia.com",
+        "Alertas y Notificaciones",
+        "Bancolombia: Compraste COP50.000,00 en TIENDA DEMO con tu T.Cred *4491, el 15/01/2026 a las 10:00.",
+    ))
+    assert txn is not None
+    assert txn.kind == "compra"
+    assert txn.amount == 50000.0
+
+
+def test_bancolombia_compra_suscripcion_sin_tarjeta():
+    txn = parse_email(_email(
+        "alertasynotificaciones@an.notificacionesbancolombia.com",
+        "Alertas y Notificaciones",
+        "Bancolombia: Compraste COP20.900,00 en GOOGLE YouTube, el 15/01/2026 a las 17:33. "
+        "Esta compra esta asociada a T.Cred *4491.",
+    ))
+    assert txn.kind == "compra"
+    assert txn.amount == 20900.0
+    assert txn.counterparty == "GOOGLE YouTube"
+
+
+def test_bancolombia_transferencia_enviada_a_cuenta():
+    txn = parse_email(_email(
+        "alertasynotificaciones@an.notificacionesbancolombia.com",
+        "Alertas y Notificaciones",
+        "Bancolombia: Transferiste $200000.00 desde tu cuenta *7808 a la cuenta *3155313578 "
+        "el 09/09/26 a las 19:54. ¿Dudas?",
+    ))
+    assert txn.kind == "transferencia_enviada"
+    assert txn.direction == DIRECTION_EXPENSE
+    assert txn.amount == 200000.0
+    assert txn.date == "2026-09-09"
+
+
+def test_bancolombia_transferencia_enviada_a_llave():
+    txn = parse_email(_email(
+        "alertasynotificaciones@an.notificacionesbancolombia.com",
+        "Alertas y Notificaciones",
+        "Bancolombia: CAMILO, transferiste $79233.00 a la llave @alguienmas desde tu cuenta *7808 "
+        "a Colombia a traves de Transfiya.",
+    ))
+    assert txn.kind == "transferencia_enviada"
+    assert txn.direction == DIRECTION_EXPENSE
+    assert txn.amount == 79233.0
+
+
+def test_bancolombia_pago_qr():
+    txn = parse_email(_email(
+        "alertasynotificaciones@an.notificacionesbancolombia.com",
+        "Alertas y Notificaciones",
+        "Bancolombia: CAMILO HERNANDEZ SANCHEZ pagaste $27000.00 por codigo QR desde tu cuenta *7808 "
+        "a la llave 0091234.",
+    ))
+    assert txn.kind == "pago_qr"
+    assert txn.direction == DIRECTION_EXPENSE
+    assert txn.amount == 27000.0
+
+
+def test_bancolombia_uses_transaction_date_not_email_arrival_date():
+    """A transaction made late at night in Colombia (UTC-5) can be emailed
+    after midnight UTC the next day; the body's own date must win so the
+    transaction isn't misfiled into the following day/month."""
+    txn = parse_email(_email(
+        "alertasynotificaciones@an.notificacionesbancolombia.com",
+        "Alertas y Notificaciones",
+        "Bancolombia: Compraste COP10.000,00 en TIENDA NOCTURNA con tu T.Cred *4491, "
+        "el 31/08/2026 a las 23:50.",
+        date="2026-09-01T04:50:00Z",
+    ))
+    assert txn.date == "2026-08-31"
 
 
 def test_mercadopago_aprobado():

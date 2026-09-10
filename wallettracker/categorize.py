@@ -9,6 +9,8 @@ _KIND_CATEGORY = {
     "retiro_fiducuenta": "Retiros de efectivo",
     "nomina": "Ingresos - Nómina",
     "transferencia_recibida": "Ingresos - Transferencias",
+    "transferencia_enviada": "Transferencias enviadas",
+    "pago_qr": "Pagos QR",
     "pago_tarjeta_credito": "Pagos tarjeta de crédito (interno)",
     "compra_rechazada": "Rechazadas (no contabilizadas)",
     "cuota_manejo": "Servicios bancarios",
