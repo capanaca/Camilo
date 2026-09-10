@@ -1,7 +1,7 @@
 {
   "_comment": "Generic starter keyword map: category -> substrings matched (case-insensitive) against the merchant/counterparty name. Add your own merchants here or in categories.local.json (gitignored, keeps personal merchant names out of the shared repo).",
   "Transporte": ["uber", "didi", "cabify", "taxi", "transporte", "parqueadero", "terpel", "gasolina", "peaje"],
-  "Alimentación": ["rappi", "exito", "carulla", "jumbo", "d1", "ara", "restaurante", "supermercado", "domicilios"],
+  "Alimentación": ["rappi", "exito", "carulla", "jumbo", "d1", "ara", "restaurante", "supermercado", "domicilios", "parrilla", "estadero", "gastronom", "cafe", "panaderia", "pasteleria", "hamburguesa", "pollos", "pollitos"],
   "Retail / Compras": ["falabella", "homecenter", "amazon", "mercado libre", "mercadolibre", "pepe ganga", "electrolux", "sabai"],
   "Viajes": ["avianca", "vivaaerobus", "connectmiles", "jetsmart", "latam", "booking", "airbnb", "ticketmaster", "tuboleta"],
   "Suscripciones / Servicios": ["netflix", "spotify", "disney", "hbo", "claro", "movistar", "tigo", "une", "epm"],

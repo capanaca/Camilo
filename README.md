@@ -36,6 +36,31 @@ se muestran aparte y **no** se suman como gasto nuevo, porque la compra
 original ya quedó contabilizada cuando ocurrió. Las transacciones rechazadas
 se listan pero tampoco se contabilizan.
 
+## Extracto de tarjeta de crédito (fuente adicional)
+
+Bancolombia solo envía una notificación por correo de las compras hechas a
+través de Mercado Pago o Bold — el resto de tu compras con tarjeta de
+crédito (Uber, Rappi, restaurantes, tiendas, etc.) no generan un correo
+individual, solo aparecen en el extracto mensual PDF que Bancolombia envía
+(remitente `extractosbancolombia@extractos.documentosbancolombia.com`,
+asunto "¡Toc-toc! Llegó tu extracto del mes"), protegido con tu cédula/NIT.
+
+`scripts/ingest_statement_pdf.py` descifra ese PDF y extrae cada movimiento
+del detalle ("Detalle del movimiento"). Como el extracto es la fuente más
+completa, cuando lo ingieres **reemplaza** cualquier compra ya cargada por
+correos de Mercado Pago/Bold/Bancolombia que caiga en el mismo rango de
+fechas, para no contar la misma compra dos veces.
+
+```bash
+pip install -r requirements-statement.txt
+python scripts/ingest_statement_pdf.py extracto.pdf TU_CEDULA_O_NIT 4491
+python scripts/make_report.py 2026-08
+```
+
+Requiere `pikepdf` y `pdfplumber` (no están en la dependencia base del
+proyecto, que es solo librería estándar). El PDF y la contraseña no se
+commitean — igual que el resto de `data/raw/`.
+
 ## Remitentes reconocidos hoy
 
 | Fuente | Remitente | Qué detecta |

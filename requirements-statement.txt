@@ -1,0 +1,5 @@
+# Optional: only needed for scripts/ingest_statement_pdf.py (reading
+# password-protected Bancolombia credit card statement PDFs). The rest of
+# wallettracker has no dependencies beyond the Python standard library.
+pikepdf
+pdfplumber

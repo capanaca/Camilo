@@ -11,6 +11,7 @@ _KIND_CATEGORY = {
     "transferencia_recibida": "Ingresos - Transferencias",
     "pago_tarjeta_credito": "Pagos tarjeta de crédito (interno)",
     "compra_rechazada": "Rechazadas (no contabilizadas)",
+    "cuota_manejo": "Servicios bancarios",
 }
 
 _CONFIG_DIR = os.path.join(os.path.dirname(__file__), "..", "config")

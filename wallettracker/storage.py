@@ -60,6 +60,22 @@ class Storage:
         )
         return [dict(row) for row in cur.fetchall()]
 
+    def delete_purchases_in_range(self, sources: list, date_from: str, date_to: str) -> int:
+        """Removes 'compra' rows from `sources` within [date_from, date_to].
+
+        Used when a more authoritative source (e.g. the credit card
+        statement PDF, which itemizes every purchase) supersedes narrower
+        per-gateway notification emails (Mercado Pago, Bold) for the same
+        billing period, to avoid counting the same purchase twice.
+        """
+        placeholders = ",".join("?" for _ in sources)
+        cur = self.conn.execute(
+            f"DELETE FROM transactions WHERE source IN ({placeholders}) "
+            f"AND kind = 'compra' AND date BETWEEN ? AND ?",
+            (*sources, date_from, date_to),
+        )
+        return cur.rowcount
+
     def months_available(self) -> list:
         cur = self.conn.execute("SELECT DISTINCT substr(date, 1, 7) AS ym FROM transactions ORDER BY ym")
         return [row["ym"] for row in cur.fetchall()]
